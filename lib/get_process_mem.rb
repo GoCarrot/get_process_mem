@@ -57,6 +57,12 @@ class GetProcessMem
     @linux
   end
 
+  # When possible retrieve the amount of memory exclusively used by the current process.
+  def private_bytes
+    memory = linux_memory_rollup(type: 'Private') if linux?
+    memory ||= bytes
+  end
+
   def bytes
     memory =   linux_status_memory if linux?
     memory ||= darwin_memory if RUNS_ON_DARWIN
