@@ -48,6 +48,7 @@ class GetProcessMem
   def initialize(pid = Process.pid)
     @status_file  = Pathname.new "/proc/#{pid}/status"
     @process_file = Pathname.new "/proc/#{pid}/smaps"
+    @rollups_file = Pathname.new "/proc/#{pid}/smaps_rollup"
     @pid          = pid
     @linux        = @status_file.exist?
   end
@@ -93,6 +94,22 @@ class GetProcessMem
   # linux stores detailed memory info in a file "/proc/#{pid}/smaps"
   def linux_memory(file = @process_file)
     lines = file.each_line.select {|line| line.match(/^Rss/) }
+    return if lines.empty?
+    lines.reduce(0) do |sum, line|
+      line.match(/(?<value>(\d*\.{0,1}\d+))\s+(?<unit>\w\w)/) do |m|
+        value = number_to_bigdecimal(m[:value]) + ROUND_UP
+        unit  = m[:unit].downcase
+        sum  += CONVERSION[unit] * value
+      end
+      sum
+    end
+  rescue Errno::EACCES
+    0
+  end
+
+  # linux stores a rollup of detailed memory in a file "/proc/#{pid}/smaps_rollup"
+  def linux_memory_rollup(file: @rollups_file, type: 'Rss')
+    lines = file.each_line.select {|line| line.match(/^#{type}/) }
     return if lines.empty?
     lines.reduce(0) do |sum, line|
       line.match(/(?<value>(\d*\.{0,1}\d+))\s+(?<unit>\w\w)/) do |m|

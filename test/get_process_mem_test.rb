@@ -33,6 +33,18 @@ class GetProcessMemTest < Test::Unit::TestCase
     assert_equal bytes, 2080768
   end
 
+  def test_linux_smap_rollup
+    delta = 1024
+    bytes = @mem.linux_memory_rollup(file: fixture_path("smaps_rollup"))
+    assert_in_delta BigDecimal("87011328.0"), bytes, delta
+  end
+
+  def test_linux_smap_rollup_private
+    delta = 2048
+    bytes = @mem.linux_memory_rollup(file: fixture_path("smaps_rollup"), type: 'Private')
+    assert_in_delta BigDecimal("50049024.0"), bytes, delta
+  end
+
   def test_conversions
     bytes = 0
     delta = BigDecimal("0.0000001")
