@@ -1,5 +1,10 @@
 ## HEAD (unreleased)
 
+## 0.3.0
+
+- Add private_bytes to attempt to retrieve memory used exclusively by the current process
+- Add linux_memory_rollup which can retrieve different memory stats from smaps_rollup.
+
 ## 0.2.7
 
 - Native (faster) support for returning memory from different PIDs on mac (https://github.com/schneems/get_process_mem/pull/42)
