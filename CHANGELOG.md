@@ -1,6 +1,6 @@
 ## HEAD (unreleased)
 
-## 0.3.0
+## 0.2.8
 
 - Add private_bytes to attempt to retrieve memory used exclusively by the current process
 - Add linux_memory_rollup which can retrieve different memory stats from smaps_rollup.
